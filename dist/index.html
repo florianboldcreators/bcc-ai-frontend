@@ -1366,33 +1366,76 @@
             // Show research progress in chat
             showResearchProgress(clientName);
             
-            if (testMode) {
-                // Simulate research progress
-                await simulateResearchProgress(clientName);
-                return;
-            }
-            
+            // Always call real API
             try {
                 const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/projects/research`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        client_name: clientName,
-                        campaign_type: campaignType,
-                        first_message: firstMessage
+                
+                // Animate steps while waiting for API
+                const animateSteps = async () => {
+                    const steps = ['step1', 'step2', 'step3'];
+                    const delays = [300, 1500, 1500];
+                    for (let i = 0; i < steps.length; i++) {
+                        await new Promise(r => setTimeout(r, delays[i]));
+                        if (i > 0) {
+                            const prev = document.getElementById(steps[i-1]);
+                            if (prev) prev.classList.add('completed');
+                        }
+                        const el = document.getElementById(steps[i]);
+                        if (el) el.classList.add('active');
+                    }
+                };
+                
+                // Run animation and API call in parallel
+                const [_, resRaw] = await Promise.all([
+                    animateSteps(),
+                    fetch(`${API_BASE}/projects/research`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token || 'none'}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            client_name: clientName,
+                            campaign_type: campaignType,
+                            first_message: firstMessage || 'New project'
+                        })
                     })
-                });
+                ]);
                 
-                const project = await res.json();
-                projects.unshift(project);
-                currentProject = project;
+                // Mark final step
+                const step3 = document.getElementById('step3');
+                if (step3) step3.classList.add('completed');
+                const step4 = document.getElementById('step4');
+                if (step4) { step4.classList.add('active'); step4.classList.add('completed'); }
                 
-                document.getElementById('projectTitle').textContent = project.name;
-                document.getElementById('projectSubtitle').textContent = `${campaignType} • ${clientName}`;
+                await new Promise(r => setTimeout(r, 500));
+                
+                const data = await resRaw.json();
+                
+                // Build research summary from real data
+                const summary = data.summary || buildResearchSummary(data, clientName);
+                
+                // Create project with real research
+                const newProject = {
+                    id: 'proj-' + Date.now(),
+                    name: `${clientName} ${campaignType}`,
+                    category: campaignType.toLowerCase(),
+                    status: 'active',
+                    subtitle: `${campaignType} • ${clientName}`,
+                    messages: [
+                        { role: 'assistant', content: summary, isResearch: true }
+                    ]
+                };
+                
+                if (firstMessage) {
+                    newProject.messages.unshift({ role: 'user', content: firstMessage });
+                }
+                
+                projects.unshift(newProject);
+                currentProject = newProject;
+                
+                document.getElementById('projectTitle').textContent = newProject.name;
+                document.getElementById('projectSubtitle').textContent = newProject.subtitle;
                 
                 renderMessages();
                 renderProjects();
@@ -1402,20 +1445,120 @@
                 }
                 
                 showStatus('Research complete', 'success');
-            } catch (error) {
-                console.error('Failed to create project with research:', error);
-                showStatus('Failed to research', 'error');
                 
-                // Show error in chat
-                const container = document.getElementById('chatContainer');
-                container.innerHTML = `
-                    <div class="empty-chat">
-                        <div class="empty-icon">❌</div>
-                        <div class="empty-text">Research failed</div>
-                        <div class="empty-hint">Please try again or contact support.</div>
-                    </div>
-                `;
+            } catch (error) {
+                console.error('Research API failed:', error);
+                
+                // Fallback: show what we know
+                const step4 = document.getElementById('step4');
+                if (step4) { 
+                    step4.textContent = '⚠️ Research partially failed'; 
+                    step4.classList.add('active');
+                }
+                
+                await new Promise(r => setTimeout(r, 1000));
+                
+                const fallbackMsg = `🔍 RECHERCHE ABGESCHLOSSEN (partial)
+
+**Client:** ${clientName}
+
+⚠️ **API-Fehler:** Konnte nicht alle Quellen scannen.
+Bitte manuell prüfen:
+• Clockify: https://app.clockify.me
+• Gmail: Suche nach "${clientName}"
+• WhatsApp: Chat mit Client suchen
+
+❓ **FRAGEN (generisch):**
+1. Was ist das genaue Projektziel?
+2. Budget und Deadline?
+3. Wer sind die Stakeholder?
+4. Gibt es ein Briefing?`;
+                
+                const newProject = {
+                    id: 'proj-' + Date.now(),
+                    name: `${clientName} ${campaignType}`,
+                    category: campaignType.toLowerCase(),
+                    status: 'active',
+                    subtitle: `${campaignType} • ${clientName}`,
+                    messages: [
+                        { role: 'assistant', content: fallbackMsg, isResearch: true }
+                    ]
+                };
+                
+                projects.unshift(newProject);
+                currentProject = newProject;
+                renderMessages();
+                renderProjects();
+                showStatus('Research partial - API error', 'error');
             }
+        }
+        
+        // Build research summary from API response
+        function buildResearchSummary(data, clientName) {
+            const clockify = data.research?.clockify || {};
+            const gmail = data.research?.gmail || [];
+            const redFlags = data.research?.red_flags || [];
+            
+            let lines = [`🔍 RECHERCHE ABGESCHLOSSEN\n\n**Client:** ${clientName}\n`];
+            
+            // Clockify
+            if (clockify.found) {
+                const team = (clockify.team || []).slice(0, 5).join(', ') || 'Noch kein Team zugewiesen';
+                lines.push(`📊 **CLOCKIFY:**`);
+                lines.push(`• Project: ${clockify.project_name || 'Not found'}`);
+                lines.push(`• Team: ${team}`);
+                if (clockify.hourly_rate > 0) lines.push(`• Rate: €${clockify.hourly_rate}/h`);
+                lines.push('');
+            } else {
+                lines.push(`📊 **CLOCKIFY:**`);
+                lines.push(`• ⚠️ Client "${clientName}" nicht in Clockify gefunden`);
+                lines.push(`• Bitte zuerst in Clockify anlegen`);
+                lines.push('');
+            }
+            
+            // Gmail
+            if (gmail.length > 0) {
+                lines.push(`📧 **GMAIL (${gmail.length} Emails):**`);
+                gmail.slice(0, 3).forEach(e => {
+                    lines.push(`• ${e.date || ''}: ${e.subject || '(no subject)'}`);
+                });
+                const tone = data.research?.gmail_tone || 'unknown';
+                lines.push(`• Ton: ${tone}`);
+                lines.push('');
+            } else {
+                lines.push(`📧 **GMAIL:**`);
+                lines.push(`• Keine Emails zu "${clientName}" gefunden`);
+                lines.push(`• Kontakt vermutlich über WhatsApp oder Slack`);
+                lines.push('');
+            }
+            
+            // Red Flags
+            if (redFlags.length > 0) {
+                lines.push(`🚨 **RED FLAGS:**`);
+                redFlags.forEach(f => {
+                    lines.push(`⚠️ ${f.type} (${(f.severity || '').toUpperCase()}):`);
+                    lines.push(f.message);
+                    lines.push(`→ ${f.recommendation}`);
+                });
+                lines.push('');
+            }
+            
+            // Budget & Deadline
+            const budget = data.research?.budget;
+            const deadline = data.research?.deadline;
+            if (budget > 0) lines.push(`💰 **Budget:** €${budget.toLocaleString()}`);
+            if (deadline && deadline !== 'unknown') lines.push(`⏰ **Deadline:** ${deadline}`);
+            if (budget > 0 || (deadline && deadline !== 'unknown')) lines.push('');
+            
+            // Questions
+            lines.push(`❓ **INFORMIERTE FRAGEN:**`);
+            lines.push(`1. Was ist das genaue Projektziel / Kampagnenziel?`);
+            if (gmail.length === 0) lines.push(`2. Gibt es WhatsApp-Kommunikation mit dem Client?`);
+            else lines.push(`2. Welche Bewertungskriterien hat der Client?`);
+            lines.push(`3. Gibt es einen Incumbent (bisherige Agentur)?`);
+            lines.push(`4. Budget und Timeline bestätigen`);
+            
+            return lines.join('\n');
         }
 
         // Show Research Progress
