@@ -1,0 +1,18 @@
+:3847 {
+    root * /Users/florian/.openclaw/workspace/bcc-ai-frontend/dist
+    
+    encode gzip
+    
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Cache-Control "no-cache, no-store, must-revalidate"
+        Pragma no-cache
+        Expires 0
+    }
+    
+    # SPA fallback
+    try_files {path} /index.html
+    
+    file_server
+}
