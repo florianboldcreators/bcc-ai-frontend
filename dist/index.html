@@ -1503,11 +1503,10 @@ Bitte manuell prüfen:
             
             // Clockify
             if (clockify.found) {
-                const team = (clockify.team || []).slice(0, 5).join(', ') || 'Noch kein Team zugewiesen';
                 lines.push(`📊 **CLOCKIFY:**`);
-                lines.push(`• Project: ${clockify.project_name || 'Not found'}`);
-                lines.push(`• Team: ${team}`);
-                if (clockify.hourly_rate > 0) lines.push(`• Rate: €${clockify.hourly_rate}/h`);
+                lines.push(`• Projekt: ${clockify.project_name || 'Not found'}`);
+                lines.push(clockify.hourly_rate > 0 ? `• Rate: €${clockify.hourly_rate}/h` : '• Rate: nicht gesetzt');
+                lines.push(clockify.budget > 0 ? `• Budget: €${clockify.budget.toLocaleString()}` : '• Budget: nicht gesetzt');
                 lines.push('');
             } else {
                 lines.push(`📊 **CLOCKIFY:**`);
