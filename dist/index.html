@@ -643,21 +643,8 @@
         let projects = JSON.parse(localStorage.getItem('bcc_projects') || '[]');
         let currentProject = null;
         
-        // Clockify clients
-        const CLOCKIFY_CLIENTS = [
-            "ACE Auto Club Europa e.V.",
-            "Bitpanda GmbH",
-            "Bold Creators Club GmbH",
-            "DECATHLON Deutschland SE & Co. KG",
-            "Estée Lauder Companies GmbH",
-            "Flyeralarm GmbH",
-            "Hisense Gorenje Germany GmbH",
-            "Kitzbühel Tourismus",
-            "Lidl Dienstleistung GmbH & Co. KG",
-            "MINI (BMW AG)",
-            "Porsche Deutschland GmbH",
-            "Sixt SE"
-        ];
+        // Clockify clients - fetched dynamically
+        let clockifyClients = [];
         
         // Initialize Google Sign-In
         function initGoogleSignIn() {
@@ -712,15 +699,6 @@
             document.getElementById('user-avatar').src = userData.picture || '';
             document.getElementById('user-name').textContent = userData.name || userData.email;
             
-            // Populate client dropdown
-            const select = document.getElementById('project-client');
-            CLOCKIFY_CLIENTS.forEach(client => {
-                const opt = document.createElement('option');
-                opt.value = client;
-                opt.textContent = client;
-                select.appendChild(opt);
-            });
-            
             renderProjects();
         }
         
@@ -741,8 +719,35 @@
         }
         
         // Project management
-        function openNewProjectModal() {
-            document.getElementById('new-project-modal').classList.remove('hidden');
+        async function openNewProjectModal() {
+            const modal = document.getElementById('new-project-modal');
+            const select = document.getElementById('project-client');
+            
+            // Show modal with loading state
+            select.innerHTML = '<option value="">Loading clients...</option>';
+            select.disabled = true;
+            modal.classList.remove('hidden');
+            
+            // Fetch fresh client list from Clockify
+            try {
+                const res = await fetch(`${API_URL}/clients`);
+                if (!res.ok) throw new Error('Failed to fetch');
+                const data = await res.json();
+                clockifyClients = data.clients;
+                
+                // Populate dropdown
+                select.innerHTML = '<option value="">Select client...</option>';
+                clockifyClients.forEach(client => {
+                    const opt = document.createElement('option');
+                    opt.value = client;
+                    opt.textContent = client;
+                    select.appendChild(opt);
+                });
+                select.disabled = false;
+            } catch (err) {
+                select.innerHTML = '<option value="">Error loading clients</option>';
+                showToast('Failed to load clients', 'error');
+            }
         }
         
         function closeNewProjectModal() {
