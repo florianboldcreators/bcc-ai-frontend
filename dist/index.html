@@ -1372,8 +1372,8 @@
                 
                 // Animate steps while waiting for API
                 const animateSteps = async () => {
-                    const steps = ['step1', 'step2', 'step3'];
-                    const delays = [300, 1500, 1500];
+                    const steps = ['step1', 'step2', 'step3', 'step4'];
+                    const delays = [300, 1200, 1200, 1000];
                     for (let i = 0; i < steps.length; i++) {
                         await new Promise(r => setTimeout(r, delays[i]));
                         if (i > 0) {
@@ -1403,10 +1403,10 @@
                 ]);
                 
                 // Mark final step
-                const step3 = document.getElementById('step3');
-                if (step3) step3.classList.add('completed');
                 const step4 = document.getElementById('step4');
-                if (step4) { step4.classList.add('active'); step4.classList.add('completed'); }
+                if (step4) step4.classList.add('completed');
+                const step5 = document.getElementById('step5');
+                if (step5) { step5.classList.add('active'); step5.classList.add('completed'); }
                 
                 await new Promise(r => setTimeout(r, 500));
                 
@@ -1532,6 +1532,23 @@ Bitte manuell prüfen:
                 lines.push('');
             }
             
+            // WhatsApp
+            const wa = data.research?.whatsapp || {};
+            if (wa.found) {
+                lines.push(`💬 **WHATSAPP:**`);
+                lines.push(`• ${(wa.chats || []).length} Chat(s) gefunden`);
+                (wa.chats || []).slice(0, 3).forEach(c => {
+                    lines.push(`  - ${c.from}: "${(c.preview || '').substring(0, 60)}..."`);
+                });
+                if (wa.stale) lines.push(`• ⚠️ Daten veraltet (Stand: ${wa.last_update || 'unbekannt'})`);
+                lines.push('');
+            } else {
+                lines.push(`💬 **WHATSAPP:**`);
+                lines.push(wa.note ? `• ${wa.note}` : `• Kein Chat zu "${clientName}" in Cache`);
+                lines.push(`• Tipp: WhatsApp Web öffnen und manuell suchen`);
+                lines.push('');
+            }
+            
             // Red Flags
             if (redFlags.length > 0) {
                 lines.push(`🚨 **RED FLAGS:**`);
@@ -1573,8 +1590,9 @@ Bitte manuell prüfen:
                     <div class="research-progress-spinner"></div>
                     <div class="research-progress-step" id="step1">📊 Checking Clockify...</div>
                     <div class="research-progress-step" id="step2">📧 Scanning Gmail...</div>
-                    <div class="research-progress-step" id="step3">🚨 Checking Red Flags...</div>
-                    <div class="research-progress-step" id="step4">✅ Research complete!</div>
+                    <div class="research-progress-step" id="step3">💬 Scanning WhatsApp...</div>
+                    <div class="research-progress-step" id="step4">🚨 Checking Red Flags...</div>
+                    <div class="research-progress-step" id="step5">✅ Research complete!</div>
                 </div>
             `;
             
