@@ -630,6 +630,7 @@
         let currentUser = null;
         let currentProject = null;
         let projects = [];
+        let testMode = false;
         
         // Initialize Google Sign-In
         function initGoogleSignIn() {
@@ -715,6 +716,12 @@
 
         // Load Projects
         async function loadProjects() {
+            if (testMode) {
+                // Already loaded in test mode
+                renderProjects();
+                return;
+            }
+            
             try {
                 const token = localStorage.getItem('access_token');
                 const res = await fetch(`${API_BASE}/projects`, {
@@ -764,6 +771,33 @@
 
         // Select Project
         async function selectProject(projectId) {
+            if (testMode) {
+                // Mock project data
+                const project = projects.find(p => p.id === projectId);
+                if (project) {
+                    currentProject = {
+                        ...project,
+                        messages: [
+                            { role: 'user', content: 'Analyze the Decathlon pitch' },
+                            { role: 'assistant', content: 'The Decathlon pitch was lost despite perfect strategy (5/5 rational). Key learning: Pitches are won 60% on emotion, 40% on logic. See Knowledge Base for full postmortem.' },
+                            { role: 'user', content: 'What were the main failure points?' },
+                            { role: 'assistant', content: '1) KI-Visual-Fail damaged first impression\n2) 48h timeline = insufficient polish\n3) Brand-Fit Gap (Porsche → Decathlon)\n4) Gemini overconfidence ("Du holst dir den Etat!")\n5) Missing emotional-impact-check' }
+                        ]
+                    };
+                    
+                    document.getElementById('projectTitle').textContent = currentProject.name;
+                    document.getElementById('projectSubtitle').textContent = currentProject.subtitle || '';
+                    
+                    renderMessages();
+                    renderProjects();
+                    
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('open');
+                    }
+                }
+                return;
+            }
+            
             try {
                 const token = localStorage.getItem('access_token');
                 const res = await fetch(`${API_BASE}/projects/${projectId}`, {
@@ -815,6 +849,32 @@
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             if (!message) return;
+            
+            if (testMode) {
+                // Mock response in test mode
+                input.value = '';
+                
+                if (!currentProject) {
+                    // Create mock project
+                    const newProject = {
+                        id: 'test-' + Date.now(),
+                        name: message.substring(0, 50),
+                        category: 'pitch',
+                        status: 'active',
+                        messages: 0
+                    };
+                    projects.unshift(newProject);
+                    await selectProject(newProject.id);
+                } else {
+                    // Add mock message
+                    currentProject.messages.push(
+                        { role: 'user', content: message },
+                        { role: 'assistant', content: 'This is a test mode response. Real AI responses will be available after OAuth setup.' }
+                    );
+                    renderMessages();
+                }
+                return;
+            }
             
             if (!currentProject) {
                 // Create new project
@@ -963,13 +1023,28 @@
             const testModeBtn = document.getElementById('test-mode-btn');
             if (testModeBtn) {
                 testModeBtn.addEventListener('click', () => {
+                    testMode = true;
                     currentUser = {
                         name: 'Florian Listl',
                         email: 'florian@boldcreators.club',
                         picture: 'https://lh3.googleusercontent.com/a/default-user'
                     };
+                    
+                    // Mock projects for test mode
+                    projects = [
+                        {
+                            id: 'demo-1',
+                            name: 'Decathlon Pitch Analysis',
+                            category: 'research',
+                            status: 'active',
+                            messages: 3,
+                            subtitle: 'Learning from the lost pitch'
+                        }
+                    ];
+                    
                     showApp();
-                    loadProjects();
+                    renderProjects();
+                    showStatus('Test Mode Active', 'info');
                 });
             }
             
