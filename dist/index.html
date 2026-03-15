@@ -1534,11 +1534,19 @@ Bitte manuell prüfen:
             // WhatsApp
             const wa = data.research?.whatsapp || {};
             if (wa.found) {
-                lines.push(`💬 **WHATSAPP:**`);
-                lines.push(`• ${(wa.chats || []).length} Chat(s) gefunden`);
-                (wa.chats || []).slice(0, 3).forEach(c => {
-                    lines.push(`  - ${c.from}: "${(c.preview || '').substring(0, 60)}..."`);
+                lines.push(`💬 **WHATSAPP (${(wa.chats || []).length} Nachrichten):**`);
+                (wa.chats || []).slice(0, 5).forEach(c => {
+                    lines.push(`  - ${c.from}: "${(c.preview || '').substring(0, 80)}"`);
                 });
+                
+                // Key insights
+                const insights = wa.key_insights || [];
+                if (insights.length > 0) {
+                    lines.push('');
+                    lines.push('🔑 **KEY INSIGHTS:**');
+                    insights.forEach(i => lines.push(`  • ${i}`));
+                }
+                
                 if (wa.stale) lines.push(`• ⚠️ Daten veraltet (Stand: ${wa.last_update || 'unbekannt'})`);
                 lines.push('');
             } else {
