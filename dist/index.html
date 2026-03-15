@@ -1560,21 +1560,9 @@ Deadline in 5 Tagen = RED FLAG
             btn.disabled = true;
             btn.innerHTML = '<span>⏳</span> Loading...';
             
-            if (testMode) {
-                // Mock Clockify data
-                await new Promise(resolve => setTimeout(resolve, 500));
-                clockifyClients = ['Decathlon', 'Nike', 'Adidas', 'Puma', 'Under Armour', 'New Balance'];
-                showClientDropdown();
-                btn.disabled = false;
-                btn.innerHTML = '<span>📊</span> Check Clockify';
-                return;
-            }
-            
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/clients`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                // Always use real Clockify API
+                const res = await fetch(`${API_BASE}/clients`);
                 const data = await res.json();
                 clockifyClients = data.clients || [];
                 showClientDropdown();
