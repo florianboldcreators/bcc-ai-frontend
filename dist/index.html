@@ -263,6 +263,111 @@
         }
         .message.user .message-content { background: var(--primary); }
         
+        /* Research Summary Styling */
+        .message-content.research-summary {
+            max-width: 100%;
+        }
+        .message-content.research-summary h2,
+        .message-content.research-summary h3 {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .message-content.research-summary h2:first-child,
+        .message-content.research-summary h3:first-child {
+            margin-top: 0;
+        }
+        .message-content.research-summary ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .message-content.research-summary li {
+            padding: 0.25rem 0;
+        }
+        .message-content.research-summary strong {
+            color: var(--primary);
+        }
+        
+        /* Red Flag Section */
+        .red-flag-section {
+            border-left: 3px solid var(--error);
+            padding-left: 1rem;
+            margin: 0.75rem 0;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 0.75rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Collapsible Sections */
+        .collapsible-section {
+            margin: 0.5rem 0;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--surface-hover);
+            border-radius: 6px;
+            user-select: none;
+        }
+        .collapsible-header:hover {
+            background: var(--border);
+        }
+        .collapsible-icon {
+            transition: transform 0.2s;
+        }
+        .collapsible-section.open .collapsible-icon {
+            transform: rotate(90deg);
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 1.5rem;
+        }
+        .collapsible-section.open .collapsible-content {
+            max-height: 1000px;
+        }
+        
+        /* Research Progress */
+        .research-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        .research-progress-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .research-progress-step {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .research-progress-step.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .research-progress-step.completed {
+            opacity: 0.5;
+            font-size: 1rem;
+        }
+        
         .empty-chat {
             flex: 1;
             display: flex;
@@ -339,6 +444,197 @@
         .send-btn:hover { background: var(--primary-hover); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
+        /* New Project Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text); }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .form-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+        .form-textarea {
+            resize: none;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+        
+        /* Client Input with Clockify */
+        .client-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .client-input-wrapper .form-input {
+            flex: 1;
+        }
+        .check-clockify-btn {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .check-clockify-btn:hover {
+            background: var(--border);
+        }
+        .check-clockify-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Client Dropdown */
+        .client-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 0.25rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        .client-dropdown.open {
+            display: block;
+        }
+        .client-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .client-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .client-dropdown-item:hover {
+            background: var(--surface-hover);
+        }
+        .client-input-container {
+            position: relative;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+        }
+        .create-research-btn {
+            width: 100%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .create-research-btn:hover {
+            background: var(--primary-hover);
+        }
+        .create-research-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         /* Mobile Styles */
         @media (max-width: 768px) {
             :root {
@@ -399,6 +695,41 @@
                 min-height: 44px;
                 display: flex;
                 align-items: center;
+            }
+            
+            /* Modal fullscreen on mobile */
+            .modal {
+                max-width: 100%;
+                max-height: 100%;
+                height: 100%;
+                border-radius: 0;
+                display: flex;
+                flex-direction: column;
+            }
+            .modal-body {
+                flex: 1;
+                overflow-y: auto;
+            }
+            .form-input, .form-select, .check-clockify-btn, .create-research-btn {
+                min-height: 48px;
+            }
+            .form-textarea {
+                min-height: 150px;
+            }
+            
+            /* Research progress on mobile */
+            .research-progress {
+                padding: 2rem 1rem;
+            }
+            .research-progress-spinner {
+                width: 80px;
+                height: 80px;
+            }
+            .research-progress-step {
+                font-size: 1.5rem;
+            }
+            .research-progress-step.completed {
+                font-size: 1.125rem;
             }
         }
         
@@ -594,6 +925,56 @@
         </div>
     </div>
 
+    <!-- New Project Modal -->
+    <div class="modal-overlay" id="newProjectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🎯 New Project</div>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <div class="client-input-container">
+                        <div class="client-input-wrapper">
+                            <input type="text" class="form-input" id="clientNameInput" placeholder="Enter client name...">
+                            <button class="check-clockify-btn" id="checkClockifyBtn">
+                                <span>📊</span> Check Clockify
+                            </button>
+                        </div>
+                        <div class="client-dropdown" id="clientDropdown">
+                            <!-- Clients from Clockify will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Campaign Type</label>
+                    <select class="form-input form-select" id="campaignTypeSelect">
+                        <option value="Pitch">🎯 Pitch</option>
+                        <option value="Production">🎬 Production</option>
+                        <option value="Consulting">💼 Consulting</option>
+                        <option value="Retainer">🔄 Retainer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">First Instructions</label>
+                    <textarea 
+                        class="form-input form-textarea" 
+                        id="firstInstructionsInput" 
+                        placeholder="Paste briefing or describe task..."
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="create-research-btn" id="createResearchBtn">
+                    <span>🔍</span> Create & Research
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Status Indicator -->
     <div class="status-indicator hidden" id="statusIndicator">
         <div class="status-dot"></div>
@@ -603,7 +984,7 @@
     <script>
         // Configuration
         const API_BASE = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8000' 
+            ? 'http://localhost:8080' 
             : 'https://api.excite-people.com';
         
         const KNOWLEDGE_BASE = {
@@ -631,6 +1012,7 @@
         let currentProject = null;
         let projects = [];
         let testMode = false;
+        let clockifyClients = [];
         
         // Initialize Google Sign-In
         function initGoogleSignIn() {
@@ -755,7 +1137,7 @@
                     <div class="project-name">${p.name}</div>
                     <div class="project-meta">
                         <span class="project-status ${p.status}"></span>
-                        ${p.messages} messages
+                        ${p.messages || 0} messages
                     </div>
                 </div>
             `).join('');
@@ -777,7 +1159,7 @@
                 if (project) {
                     currentProject = {
                         ...project,
-                        messages: [
+                        messages: project.chatMessages || [
                             { role: 'user', content: 'Analyze the Decathlon pitch' },
                             { role: 'assistant', content: 'The Decathlon pitch was lost despite perfect strategy (5/5 rational). Key learning: Pitches are won 60% on emotion, 40% on logic. See Knowledge Base for full postmortem.' },
                             { role: 'user', content: 'What were the main failure points?' },
@@ -834,14 +1216,64 @@
                 return;
             }
             
-            container.innerHTML = currentProject.messages.map(m => `
-                <div class="message ${m.role}">
-                    <div class="message-avatar">${m.role === 'user' ? '👤' : '🎩'}</div>
-                    <div class="message-content">${m.content}</div>
-                </div>
-            `).join('');
+            container.innerHTML = currentProject.messages.map(m => {
+                const isResearch = m.isResearch || m.content.includes('🔍 RECHERCHE ABGESCHLOSSEN');
+                const contentClass = isResearch ? 'message-content research-summary' : 'message-content';
+                const formattedContent = isResearch ? formatResearchSummary(m.content) : escapeHtml(m.content);
+                
+                return `
+                    <div class="message ${m.role}">
+                        <div class="message-avatar">${m.role === 'user' ? '👤' : '🎩'}</div>
+                        <div class="${contentClass}">${formattedContent}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add click handlers for collapsible sections
+            container.querySelectorAll('.collapsible-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('open');
+                });
+            });
             
             container.scrollTop = container.scrollHeight;
+        }
+
+        // Format Research Summary with collapsible sections and red flags
+        function formatResearchSummary(content) {
+            // Convert markdown-like content to HTML
+            let html = escapeHtml(content);
+            
+            // Bold text
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Red flags section
+            html = html.replace(/(🚨\s*<strong>RED FLAGS:<\/strong>.*?)(?=<br><br>❓|<br><br>$|$)/gs, (match) => {
+                return `<div class="red-flag-section">${match}</div>`;
+            });
+            
+            // Make sections collapsible
+            const sections = ['📊 <strong>CLOCKIFY:</strong>', '📧 <strong>GMAIL:</strong>', '🚨 <strong>RED FLAGS:</strong>', '❓ <strong>INFORMIERTE FRAGEN:</strong>'];
+            
+            sections.forEach(section => {
+                const regex = new RegExp(`(${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'g');
+                html = html.replace(regex, '<div class="collapsible-section open"><div class="collapsible-header"><span class="collapsible-icon">▶</span>$1</div><div class="collapsible-content">');
+            });
+            
+            // Close collapsible sections (simplified - they stay open by default)
+            // In practice, you'd need more sophisticated parsing
+            
+            return html;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // Send Message
@@ -887,7 +1319,7 @@
             }
         }
 
-        // Create Project
+        // Create Project (old simple method)
         async function createProject(name, initialMessage) {
             try {
                 const token = localStorage.getItem('access_token');
@@ -913,6 +1345,174 @@
             }
         }
 
+        // Create Project with Research
+        async function createProjectWithResearch(clientName, campaignType, firstMessage) {
+            closeModal();
+            
+            // Show research progress in chat
+            showResearchProgress(clientName);
+            
+            if (testMode) {
+                // Simulate research progress
+                await simulateResearchProgress(clientName);
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const res = await fetch(`${API_BASE}/projects/research`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        client_name: clientName,
+                        campaign_type: campaignType,
+                        first_message: firstMessage
+                    })
+                });
+                
+                const project = await res.json();
+                projects.unshift(project);
+                currentProject = project;
+                
+                document.getElementById('projectTitle').textContent = project.name;
+                document.getElementById('projectSubtitle').textContent = `${campaignType} • ${clientName}`;
+                
+                renderMessages();
+                renderProjects();
+                
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+                
+                showStatus('Research complete', 'success');
+            } catch (error) {
+                console.error('Failed to create project with research:', error);
+                showStatus('Failed to research', 'error');
+                
+                // Show error in chat
+                const container = document.getElementById('chatContainer');
+                container.innerHTML = `
+                    <div class="empty-chat">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-text">Research failed</div>
+                        <div class="empty-hint">Please try again or contact support.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show Research Progress
+        function showResearchProgress(clientName) {
+            currentProject = null;
+            document.getElementById('projectTitle').textContent = `Researching: ${clientName}`;
+            document.getElementById('projectSubtitle').textContent = 'Please wait...';
+            
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = `
+                <div class="research-progress">
+                    <div class="research-progress-spinner"></div>
+                    <div class="research-progress-step" id="step1">📊 Checking Clockify...</div>
+                    <div class="research-progress-step" id="step2">📧 Scanning Gmail...</div>
+                    <div class="research-progress-step" id="step3">🚨 Checking Red Flags...</div>
+                    <div class="research-progress-step" id="step4">✅ Research complete!</div>
+                </div>
+            `;
+            
+            renderProjects();
+        }
+
+        // Simulate Research Progress (Test Mode)
+        async function simulateResearchProgress(clientName) {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            const delays = [1000, 2000, 1000, 500];
+            
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, i === 0 ? 300 : delays[i - 1]));
+                
+                // Mark previous step as completed
+                if (i > 0) {
+                    const prevStep = document.getElementById(steps[i - 1]);
+                    if (prevStep) prevStep.classList.add('completed');
+                }
+                
+                // Show current step
+                const currentStep = document.getElementById(steps[i]);
+                if (currentStep) currentStep.classList.add('active');
+            }
+            
+            // Wait a moment then show results
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Create mock project with research results
+            const mockResearchSummary = `🔍 RECHERCHE ABGESCHLOSSEN
+
+**Client:** ${clientName}
+
+📊 **CLOCKIFY:**
+• Team: Alexandra, Jose, Mert
+• Hourly Rate: €120/h
+• Project: ${clientName}-2026
+
+📧 **GMAIL:**
+• 8 relevante Emails gefunden
+• Ton: formal (Sie)
+• Letzter Kontakt: 12. März
+
+🚨 **RED FLAGS:**
+⚠️ SHORT_DEADLINE (HIGH):
+Deadline in 5 Tagen = RED FLAG
+→ Decathlon-Learning: 48h-Pitch trotz perfekter Strategie verloren
+
+❓ **INFORMIERTE FRAGEN:**
+1. Was ist das genaue Produkt/Kampagnenziel?
+2. Welche Bewertungskriterien hat der Client?
+3. Gibt es einen Incumbent (bisherige Agentur)?
+4. Welches Ergebnis hatte der letzte Pitch?`;
+
+            const campaignType = document.getElementById('campaignTypeSelect').value;
+            const firstInstructions = document.getElementById('firstInstructionsInput').value;
+            
+            const newProject = {
+                id: 'test-research-' + Date.now(),
+                name: `${clientName} ${campaignType}`,
+                category: campaignType.toLowerCase(),
+                status: 'active',
+                messages: 1,
+                subtitle: `${campaignType} • ${clientName}`,
+                chatMessages: [
+                    { 
+                        role: 'assistant', 
+                        content: mockResearchSummary,
+                        isResearch: true
+                    }
+                ]
+            };
+            
+            if (firstInstructions) {
+                newProject.chatMessages.push(
+                    { role: 'user', content: firstInstructions },
+                    { role: 'assistant', content: `Verstanden! Ich habe das Briefing analysiert und die Research-Daten berücksichtigt.\n\nBasierend auf den Red Flags empfehle ich:\n1. Sofort Deadline-Expectations klären\n2. Team-Kapazitäten prüfen (Alexandra, Jose, Mert)\n3. Formalen Ton beibehalten (Sie-Form)\n\nWie möchtest du fortfahren?` }
+                );
+            }
+            
+            projects.unshift(newProject);
+            currentProject = {
+                ...newProject,
+                messages: newProject.chatMessages
+            };
+            
+            document.getElementById('projectTitle').textContent = newProject.name;
+            document.getElementById('projectSubtitle').textContent = newProject.subtitle;
+            
+            renderMessages();
+            renderProjects();
+            
+            showStatus('Research complete', 'success');
+        }
+
         // Add Message
         async function addMessage(projectId, content) {
             try {
@@ -935,6 +1535,71 @@
                 console.error('Failed to send message:', error);
                 showStatus('Failed to send', 'error');
             }
+        }
+
+        // Check Clockify for clients
+        async function checkClockify() {
+            const btn = document.getElementById('checkClockifyBtn');
+            const dropdown = document.getElementById('clientDropdown');
+            const input = document.getElementById('clientNameInput');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span> Loading...';
+            
+            if (testMode) {
+                // Mock Clockify data
+                await new Promise(resolve => setTimeout(resolve, 500));
+                clockifyClients = ['Decathlon', 'Nike', 'Adidas', 'Puma', 'Under Armour', 'New Balance'];
+                showClientDropdown();
+                btn.disabled = false;
+                btn.innerHTML = '<span>📊</span> Check Clockify';
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const res = await fetch(`${API_BASE}/clients`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                clockifyClients = data.clients || [];
+                showClientDropdown();
+            } catch (error) {
+                console.error('Failed to fetch Clockify clients:', error);
+                showStatus('Failed to load clients', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>📊</span> Check Clockify';
+        }
+
+        // Show Client Dropdown
+        function showClientDropdown() {
+            const dropdown = document.getElementById('clientDropdown');
+            const input = document.getElementById('clientNameInput');
+            const searchTerm = input.value.toLowerCase();
+            
+            const filteredClients = clockifyClients.filter(c => 
+                c.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredClients.length === 0) {
+                dropdown.innerHTML = '<div class="client-dropdown-item">No clients found</div>';
+            } else {
+                dropdown.innerHTML = filteredClients.map(client => 
+                    `<div class="client-dropdown-item" data-client="${client}">${client}</div>`
+                ).join('');
+            }
+            
+            dropdown.classList.add('open');
+            
+            // Add click handlers
+            dropdown.querySelectorAll('.client-dropdown-item[data-client]').forEach(item => {
+                item.addEventListener('click', () => {
+                    input.value = item.dataset.client;
+                    dropdown.classList.remove('open');
+                });
+            });
         }
 
         // Load Knowledge Base Item
@@ -964,6 +1629,22 @@
             }
         }
 
+        // Modal Functions
+        function openModal() {
+            document.getElementById('newProjectModal').classList.add('open');
+            document.getElementById('clientNameInput').value = '';
+            document.getElementById('campaignTypeSelect').value = 'Pitch';
+            document.getElementById('firstInstructionsInput').value = '';
+            document.getElementById('clientDropdown').classList.remove('open');
+            setTimeout(() => {
+                document.getElementById('clientNameInput').focus();
+            }, 100);
+        }
+
+        function closeModal() {
+            document.getElementById('newProjectModal').classList.remove('open');
+        }
+
         // Show Status
         function showStatus(text, type = 'info') {
             const indicator = document.getElementById('statusIndicator');
@@ -974,6 +1655,12 @@
             setTimeout(() => {
                 indicator.classList.add('hidden');
             }, 3000);
+        }
+
+        // Auto-grow textarea
+        function autoGrowTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
         }
 
         // Event Listeners
@@ -994,6 +1681,7 @@
                     showGoogleSignInFallback();
                 }
             }, 5000);
+            
             // Check for existing session
             const token = localStorage.getItem('access_token');
             if (token) {
@@ -1065,10 +1753,11 @@
 
             // Auto-resize textarea
             const textarea = document.getElementById('messageInput');
-            textarea.addEventListener('input', () => {
-                textarea.style.height = 'auto';
-                textarea.style.height = textarea.scrollHeight + 'px';
-            });
+            textarea.addEventListener('input', () => autoGrowTextarea(textarea));
+            
+            // Auto-resize first instructions textarea
+            const firstInstructionsTextarea = document.getElementById('firstInstructionsInput');
+            firstInstructionsTextarea.addEventListener('input', () => autoGrowTextarea(firstInstructionsTextarea));
 
             // Mobile menu toggle
             document.getElementById('menuToggle').addEventListener('click', () => {
@@ -1088,14 +1777,50 @@
                 });
             });
 
-            // New Project
-            document.getElementById('newProjectBtn').addEventListener('click', () => {
-                currentProject = null;
-                document.getElementById('projectTitle').textContent = 'New Project';
-                document.getElementById('projectSubtitle').textContent = 'What would you like to create?';
-                renderMessages();
-                renderProjects();
-                document.getElementById('messageInput').focus();
+            // New Project Modal
+            document.getElementById('newProjectBtn').addEventListener('click', openModal);
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('newProjectModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeModal();
+            });
+            
+            // Escape key closes modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            // Check Clockify button
+            document.getElementById('checkClockifyBtn').addEventListener('click', checkClockify);
+            
+            // Client input - filter dropdown as user types
+            document.getElementById('clientNameInput').addEventListener('input', () => {
+                if (clockifyClients.length > 0) {
+                    showClientDropdown();
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('clientDropdown');
+                const container = document.querySelector('.client-input-container');
+                if (!container.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
+
+            // Create & Research button
+            document.getElementById('createResearchBtn').addEventListener('click', () => {
+                const clientName = document.getElementById('clientNameInput').value.trim();
+                const campaignType = document.getElementById('campaignTypeSelect').value;
+                const firstInstructions = document.getElementById('firstInstructionsInput').value.trim();
+                
+                if (!clientName) {
+                    showStatus('Please enter a client name', 'error');
+                    document.getElementById('clientNameInput').focus();
+                    return;
+                }
+                
+                createProjectWithResearch(clientName, campaignType, firstInstructions);
             });
         });
     </script>
