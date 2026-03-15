@@ -501,6 +501,9 @@
                     </svg>
                     Sign in with Google
                 </button>
+                <button id="test-mode-btn" class="google-signin-fallback" style="margin-top: 0.5rem; background: var(--surface); color: var(--text); border-color: var(--border);">
+                    🧪 Test Mode (Preview)
+                </button>
             </div>
         </div>
     </div>
@@ -956,6 +959,20 @@
                 initGoogleSignIn();
             }
 
+            // Test Mode (for preview without OAuth)
+            const testModeBtn = document.getElementById('test-mode-btn');
+            if (testModeBtn) {
+                testModeBtn.addEventListener('click', () => {
+                    currentUser = {
+                        name: 'Florian Listl',
+                        email: 'florian@boldcreators.club',
+                        picture: 'https://lh3.googleusercontent.com/a/default-user'
+                    };
+                    showApp();
+                    loadProjects();
+                });
+            }
+            
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('access_token');
