@@ -206,8 +206,13 @@
         let authToken = localStorage.getItem('bcc_token');
         let userData = JSON.parse(localStorage.getItem('bcc_user') || 'null');
         
-        // Initialize Google Sign-In
-        window.onload = function() {
+        // Initialize Google Sign-In with retry
+        function initGoogleSignIn() {
+            if (typeof google === 'undefined' || typeof google.accounts === 'undefined') {
+                setTimeout(initGoogleSignIn, 100);
+                return;
+            }
+            
             google.accounts.id.initialize({
                 client_id: '514721456543-hi1uakb551vtbs0uelbmpldq90p9nses.apps.googleusercontent.com',
                 callback: handleCredentialResponse,
@@ -222,7 +227,9 @@
                     { theme: 'filled_black', size: 'large', shape: 'pill' }
                 );
             }
-        };
+        }
+        
+        window.onload = initGoogleSignIn;
         
         async function handleCredentialResponse(response) {
             try {
